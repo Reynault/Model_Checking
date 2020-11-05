@@ -1,0 +1,62 @@
+// Choix du modèle, ici PTA
+// Le moteur utilisé est Digital Clock
+pta
+
+//-------CONFIGURATION-------//
+
+// Valeurs limites pour les ressources
+const int N_EXP = 10;
+const int N_GOLD  = 10;
+
+// Valeurs liées aux événements
+// Voleur
+const int THIEF_GOLD = 5;
+// Accident
+const int ACCIDENT_TIME = 5;
+// Artéfact
+const int ARTEFACT_EXP = 7;
+// Trésor
+const int TREASURE_TIME = 6;
+const int TREASURE_GOLD = 6;
+// Art martiaux
+const int MARTIAL_COST = 3;
+const int MARTIAL_EXP = 5;
+
+// Temps limite pour une partie
+const int T = 10;
+
+//-------MODULES-------//
+
+module hero
+	// Position du Hero dans la carte, il commence à la position 5
+	// qui représente la position initiale
+	heroLocation : [0..7] init 5;
+	// Variables qui représentent respectivement OR_H et EXP_H
+	goldHero : [0..N_EXP] init 0;
+	expHero : [0..N_GOLD] init 0;
+
+	// Un personnage peut soit se déplacer soit prendre une quête disponible
+endmodule
+
+// module qui représente le Méchant
+// qui au final n'est qu'un autre joueur avec les mêmes ressources 
+
+// NOTES ALEXIS : On fait une copie du module, si on veut que le module soit identique il faut renommer les variables, c'est pas comme en
+// uppaal où tu peux juste faire plusieurs instances, la c'est chiant faut explicitement faire les nouvelles variables
+// à la main
+module bad = hero [ goldHero=goldBad, expHero=expBad, heroLocation=badLocation ] endmodule
+
+module rpg
+	// Temps de la partie qui s'écoule
+	time : clock;
+	// Booléen qui indique quand la partie est finie
+	end  : bool init false;
+	
+	// Invariant qui empêche time de dépasser T
+	invariant
+		(time <= T)
+	endinvariant
+
+	// Condition de fin de jeu
+	[] time > T -> 1: (end'=true);
+endmodule
