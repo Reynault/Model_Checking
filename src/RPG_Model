@@ -36,6 +36,7 @@ module hero
 	expHero : [0..N_GOLD] init 0;
 
 	// Un personnage peut soit se déplacer soit prendre une quête disponible
+	
 endmodule
 
 // module qui représente le Méchant
@@ -60,3 +61,26 @@ module rpg
 	// Condition de fin de jeu
 	[] time > T -> 1: (end'=true);
 endmodule
+
+// module qui représente la carte avec les quêtes, les chemins et
+// les lieux
+module HerosMap
+	
+endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
