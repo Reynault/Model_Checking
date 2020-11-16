@@ -50,9 +50,12 @@ module heroGame
 	
 	invariant
 		// ---CONFIGURATION DU JEU---
+
 		// invariant qui empêche de manière globale
 		// le module de dépasser la limite de temps
 		(time <= T) & 
+
+		// ---INVARIANTS POUR CHAQUE EVENT---
 		(hevent=1 => x<=0) &
 		(hevent=2 => x<=ACCIDENT_TIME) &
 		(hevent=3 => x<=0) &
@@ -61,10 +64,12 @@ module heroGame
 		(hevent=6 => x<=0) &
 		(hquest=1 => x<=5)
 	endinvariant
+
 	// commande qui s'active quand c'est la fin de la partie
 	[] time = T -> 1: (end'=true);
 	
 	// ---CONFIGURATION DES ROUTES---
+
 	[] hevent = 0 & hlocation = 0 -> 
 		 0.4:(hevent'=1)&(x'=0)&(hlocation'=1)
 		+0.05:(hevent'=2)&(x'=0)&(hlocation'=1)
@@ -95,6 +100,7 @@ module heroGame
 		+0.2:(hevent'=6)&(x'=0)&(hlocation'=1);
 
 	// ---CONFIGURATION DES EVENEMENTS---
+
 	// événement du voleur
 	[] x=0 & goldHero < THIEF_GOLD & hevent = 1 -> 
 		1:(goldHero'=0)&(hevent'=0);
@@ -162,24 +168,20 @@ module heroGame
 		1:(hquest'=0)&(expHero'=N_EXP);
 endmodule
 
-module badGuyGame = heroGame 
-	[time=timeM,
-	 x = xM,
-	 end = endM,
-	 hlocation = mlocation,
-	 hevent = mevent,
-	 hquest = mquest,
-	 goldHero = goldBadGuy, 
-	 expHero = expBadGuy] 
-endmodule
+label "heroFinished" = (end = true);
 
-label "heroFinished" = end = true;
-label "badGuyFinished" = endM = true;
+//module badGuyGame = heroGame 
+//	[time=timeM,
+//	 x = xM,
+//	 end = endM,
+//	 hlocation = mlocation,
+//	 hevent = mevent,
+//	 hquest = mquest,
+//	 goldHero = goldBadGuy, 
+//	 expHero = expBadGuy] 
+//endmodule
 
-
-
-
-
+//label "badGuyFinished" = endM = true;
 
 
 
