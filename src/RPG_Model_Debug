@@ -31,6 +31,8 @@ module heroGame
 	// ---VARIABLES DU JEU---
 	// horloge qui représente le temps de la partie
 	time: clock;
+	// horloge à utiliser pour bloquer le héro
+	x: clock;
 	// booléen qui permet d'indiquer si la partie est finie
 	end: bool init false;
 
@@ -43,19 +45,127 @@ module heroGame
 	hquest: [0..2] init 0;
 
 	// Variables qui représentent respectivement OR_H et EXP_H
-	goldHero : [0..N_EXP] init 0;
-	expHero : [0..N_GOLD] init 0;
+	goldHero : [0..N_GOLD] init 0;
+	expHero : [0..N_EXP] init 0;
 	
 	invariant
 		// ---CONFIGURATION DU JEU---
 
 		// invariant qui empêche de manière globale
 		// le module de dépasser la limite de temps
-		(time <= T)
+		(time <= T) &
+
+		// ---INVARIANTS POUR CHAQUE EVENT---
+		(hevent=1 => x<=0) &
+		(hevent=2 => x<=ACCIDENT_TIME) &
+		(hevent=3 => x<=0) &
+		(hevent=4 => x<=TREASURE_TIME) &
+		(hevent=5 => x<=0) &
+		(hevent=6 => x<=0) &
+		(hquest=1 => x<=5)
 	endinvariant
 
 	// commande qui s'active quand c'est la fin de la partie
 	[ending] time = T -> 1: (end'=true);
+
+	// ---CONFIGURATION DES ROUTES---
+
+	[road0_1] hevent = 0 & hlocation = 0 -> 
+		 0.4:(hevent'=1)&(x'=0)&(hlocation'=1)
+		+0.05:(hevent'=2)&(x'=0)&(hlocation'=1)
+		+0.05:(hevent'=3)&(x'=0)&(hlocation'=1)
+		+0.05:(hevent'=4)&(x'=0)&(hlocation'=1)
+		+0.2:(hevent'=5)&(x'=0)&(hlocation'=1)
+		+0.25:(hevent'=6)&(x'=0)&(hlocation'=1);
+	[road1_2] hevent = 0 & hlocation = 1 -> 
+		 0.1:(hevent'=1)&(x'=0)&(hlocation'=2)
+		+0.1:(hevent'=2)&(x'=0)&(hlocation'=2)
+		+0.2:(hevent'=3)&(x'=0)&(hlocation'=2)
+		+0.2:(hevent'=4)&(x'=0)&(hlocation'=2)
+		+0.1:(hevent'=5)&(x'=0)&(hlocation'=2)
+		+0.3:(hevent'=6)&(x'=0)&(hlocation'=2);
+	[road2_0] hevent = 0 & hlocation = 2 -> 
+		 0.2:(hevent'=1)&(x'=0)&(hlocation'=0)
+		+0.2:(hevent'=2)&(x'=0)&(hlocation'=0)
+		+0.2:(hevent'=3)&(x'=0)&(hlocation'=0)
+		+0.1:(hevent'=4)&(x'=0)&(hlocation'=0)
+		+0.2:(hevent'=5)&(x'=0)&(hlocation'=0)
+		+0.1:(hevent'=6)&(x'=0)&(hlocation'=0);
+	[road2_1] hevent = 0 & hlocation = 2 -> 
+   	 	 0.1:(hevent'=1)&(x'=0)&(hlocation'=1)
+		+0.2:(hevent'=2)&(x'=0)&(hlocation'=1)
+		+0.2:(hevent'=3)&(x'=0)&(hlocation'=1)
+		+0.1:(hevent'=4)&(x'=0)&(hlocation'=1)
+		+0.2:(hevent'=5)&(x'=0)&(hlocation'=1)
+		+0.2:(hevent'=6)&(x'=0)&(hlocation'=1);
+
+	// ---CONFIGURATION DES EVENEMENTS---
+
+	// événement du voleur
+	[thief] x=0 & goldHero < THIEF_GOLD & hevent = 1 -> 
+		1:(goldHero'=0)&(hevent'=0);
+	[thief] x=0 & goldHero >= THIEF_GOLD & hevent = 1 -> 
+		1:(goldHero'=goldHero-THIEF_GOLD)&(hevent'=0);
+
+	// événement de l'accident
+	[accident] x=ACCIDENT_TIME & hevent = 2 -> 
+		1:(hevent'=0);
+
+	// événement de l'artefact
+	[artefact] x=0 & (expHero+ARTEFACT_EXP) <= N_EXP & hevent = 3 -> 
+		1:(expHero'=expHero+ARTEFACT_EXP)&(hevent'=0);
+	[artefact] x=0 & (expHero+ARTEFACT_EXP) > N_EXP & hevent = 3 -> 
+		1:(expHero'=N_EXP)&(hevent'=0);
+
+	// événement du trésor
+	[treasure] x=TREASURE_TIME & (goldHero+TREASURE_GOLD) <= N_GOLD & hevent = 4 -> 
+		1:(goldHero'=goldHero+TREASURE_GOLD)&(hevent'=0);
+	[treasure] x=TREASURE_TIME & (goldHero+TREASURE_GOLD) > N_GOLD & hevent = 4 -> 
+		1:(goldHero'=N_GOLD)&(hevent'=0);
+
+	// événement du maître des arts martiaux
+	[martial] x=0 & goldHero < MARTIAL_COST & hevent = 5 -> 
+		1:(hevent'=0);
+	[martial] x=0 & goldHero >= MARTIAL_COST & (expHero + MARTIAL_EXP) <= N_EXP& hevent = 5 -> 
+		1:(goldHero'=goldHero-MARTIAL_COST)&(expHero'=expHero+MARTIAL_EXP)&(hevent'=0);
+	[martial] x=0 & goldHero >= MARTIAL_COST & (expHero + MARTIAL_EXP) > N_EXP& hevent = 5 -> 
+		1:(goldHero'=goldHero-MARTIAL_COST)&(expHero'=N_EXP)&(hevent'=0);
+
+	// pas d'événements
+	[nothing] x=0 & hevent = 6 -> 
+		1:(hevent'=0);
+
+	// ---CONFIGURATION DES QUÊTES Q1---
+
+	// transition d'entrée de la première quête
+	[quest1in] hevent = 0 & goldHero >= 1 & hlocation = 0 & hquest = 0 ->
+		1:(hquest'=1)&(x'=0);
+	
+	// transition de sortie de la première quête
+	[quest1out] x=5 & goldHero >= 1 & (expHero + 8) <= N_EXP & hquest = 1 ->
+		1:(expHero'=expHero+8)&(goldHero'=goldHero-1)&(hquest'=0);
+		
+	[quest1out] x=5 & goldHero >= 1 & (expHero + 8) > N_EXP & hquest = 1 ->
+		1:(expHero'=N_EXP)&(goldHero'=goldHero-1)&(hquest'=0);
+
+	// ---CONFIGURATION DES QUÊTES Q2---
+	
+	// transitions d'acceptation de la deuxième quête
+	[quest2accept] hevent = 0 & hlocation = 1 & hquest = 0 ->
+		1:(hquest'=2);
+	[quest2accept] hevent = 0 & hlocation = 2 & hquest = 0 ->
+		1:(hquest'=2);
+
+	// transitions de succès de la deuxième quête
+	[quest2success] hevent = 0 & (expHero + 5) <= N_EXP & hlocation = 1 & hquest = 2 ->
+		1:(hquest'=0)&(expHero'=expHero+5);
+	[quest2success] hevent = 0 & (expHero + 5) > N_EXP & hlocation = 1 & hquest = 2 ->
+		1:(hquest'=0)&(expHero'=N_EXP);
+
+	[quest2success] hevent = 0 & (expHero + 5) <= N_EXP & hlocation = 2 & hquest = 2 ->
+		1:(hquest'=0)&(expHero'=expHero+5);
+	[quest2success] hevent = 0 & (expHero + 5) > N_EXP & hlocation = 2 & hquest = 2 ->
+		1:(hquest'=0)&(expHero'=N_EXP);
 endmodule
 
 label "heroFinished" = (end = true);
