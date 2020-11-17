@@ -56,9 +56,7 @@ module hero
 	hlocation: [0..7] init 7; // sa position dans la carte
 	hevent: [0..6] init 0;    // l'évènement en cours
 	hquest: [0..7] init 0;	  // la quête en cours
-	hquest3bool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
-	hquest5bool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
-	hquest7bool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
+	hquestbool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
 	hgold: [0..N_GOLD] init 0;// l'or
 	hexp: [0..N_EXP] init 0;  // l'exp
 	htour: [0..T] init T;// tours restant de hero
@@ -299,19 +297,19 @@ module hero
 	
 	// acceptation 3
 	[] htour > 0 & hevent = 0 & hlocation = 6 & hquest = 0 ->
-		1:(hquest'=3)&(hquest3bool'=false);
+		1:(hquest'=3)&(hquestbool'=false);
 	[] htour > 0 & hevent = 0 & hlocation = 7 & hquest = 0 ->
-		1:(hquest'=3)&(hquest3bool'=true);
+		1:(hquest'=3)&(hquestbool'=true);
 
 	// succès 3
-	[] htour > 0 & hevent = 0 & hquest3bool = true & (hexp + Q3_EXP) <= N_EXP & hlocation = 6 & hquest = 3 ->
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q3_EXP) <= N_EXP & hlocation = 6 & hquest = 3 ->
 		1:(hquest'=0)&(hexp'=hexp+Q3_EXP);
-	[] htour > 0 & hevent = 0 & hquest3bool = true & (hexp + Q3_EXP) > N_EXP & hlocation = 6 & hquest = 3 ->
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q3_EXP) > N_EXP & hlocation = 6 & hquest = 3 ->
 		1:(hquest'=0)&(hexp'=N_EXP);
 
-	[] htour > 0 & hevent = 0 & hquest3bool = false & (hexp + Q3_EXP) <= N_EXP & hlocation = 7 & hquest = 3 ->
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q3_EXP) <= N_EXP & hlocation = 7 & hquest = 3 ->
 		1:(hquest'=0)&(hexp'=hexp+Q3_EXP);
-	[] htour > 0 & hevent = 0 & hquest3bool = false & (hexp + Q3_EXP) > N_EXP & hlocation = 7 & hquest = 3 ->
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q3_EXP) > N_EXP & hlocation = 7 & hquest = 3 ->
 		1:(hquest'=0)&(hexp'=N_EXP);
 
 	// ---CONFIGURATION DES QUÊTES Q4---
@@ -332,19 +330,19 @@ module hero
 	
 	// acceptation 5
 	[] htour > 0 & hevent = 0 & hlocation = 1 & hquest = 0 ->
-		1:(hquest'=5)&(hquest5bool'=false);
+		1:(hquest'=5)&(hquestbool'=false);
 	[] htour > 0 & hevent = 0 & hlocation = 3 & hquest = 0 ->
-		1:(hquest'=5)&(hquest5bool'=true);
+		1:(hquest'=5)&(hquestbool'=true);
 
 	// succès 5
-	[] htour > 0 & hevent = 0 & hquest5bool = true & (hexp + Q5_EXP) <= N_EXP & hlocation = 1 & hquest = 5 ->
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q5_EXP) <= N_EXP & hlocation = 1 & hquest = 5 ->
 		1:(hquest'=0)&(hexp'=hexp+Q5_EXP);
-	[] htour > 0 & hevent = 0 & hquest5bool = true & (hexp + Q5_EXP) > N_EXP & hlocation = 1 & hquest = 5 ->
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q5_EXP) > N_EXP & hlocation = 1 & hquest = 5 ->
 		1:(hquest'=0)&(hexp'=N_EXP);
 
-	[] htour > 0 & hevent = 0 & hquest5bool = false & (hexp + Q5_EXP) <= N_EXP & hlocation = 3 & hquest = 5 ->
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q5_EXP) <= N_EXP & hlocation = 3 & hquest = 5 ->
 		1:(hquest'=0)&(hexp'=hexp+Q5_EXP);
-	[] htour > 0 & hevent = 0 & hquest5bool = false & (hexp + Q5_EXP) > N_EXP & hlocation = 3 & hquest = 5 ->
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q5_EXP) > N_EXP & hlocation = 3 & hquest = 5 ->
 		1:(hquest'=0)&(hexp'=N_EXP);
 
 	// ---CONFIGURATION DES QUÊTES Q6---
@@ -364,19 +362,19 @@ module hero
 
 	// acceptation 7
 	[] htour > 0 & hevent = 0 & hlocation = 2 & hquest = 0 ->
-		1:(hquest'=7)&(hquest7bool'=false);
+		1:(hquest'=7)&(hquestbool'=false);
 	[] htour > 0 & hevent = 0 & hlocation = 4 & hquest = 0 ->
-		1:(hquest'=7)&(hquest7bool'=true);
+		1:(hquest'=7)&(hquestbool'=true);
 
 	// succès 7
-	[] htour > 0 & hevent = 0 & hquest7bool = true & (hexp + Q7_EXP) <= N_EXP & hlocation = 2 & hquest = 7 ->
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q7_EXP) <= N_EXP & hlocation = 2 & hquest = 7 ->
 		1:(hquest'=0)&(hexp'=hexp+Q7_EXP);
-	[] htour > 0 & hevent = 0 & hquest7bool = true & (hexp + Q7_EXP) > N_EXP & hlocation = 2 & hquest = 7 ->
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q7_EXP) > N_EXP & hlocation = 2 & hquest = 7 ->
 		1:(hquest'=0)&(hexp'=N_EXP);
 
-	[] htour > 0 & hevent = 0 & hquest7bool = false & (hexp + Q7_EXP) <= N_EXP & hlocation = 4 & hquest = 7 ->
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q7_EXP) <= N_EXP & hlocation = 4 & hquest = 7 ->
 		1:(hquest'=0)&(hexp'=hexp+Q7_EXP);
-	[] htour > 0 & hevent = 0 & hquest7bool = false & (hexp + Q7_EXP) > N_EXP & hlocation = 4 & hquest = 7 ->
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q7_EXP) > N_EXP & hlocation = 4 & hquest = 7 ->
 		1:(hquest'=0)&(hexp'=N_EXP);
 endmodule
 
@@ -392,9 +390,7 @@ module badguy = hero [
 	hgold = mgold,
 	hexp = mexp,
 	htour = mtour,
-	hquest3bool = mquest3bool,
-	hquest5bool = mquest5bool,
-	hquest7bool = mquest7bool
+	hquestbool = mquestbool
 ]
 endmodule
 
