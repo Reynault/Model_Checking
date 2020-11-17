@@ -220,7 +220,6 @@ module hero
    	 	 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=7)
 		+0.6:(hevent'=2)&(htour'=htour-1)&(hlocation'=7);
 
-	//Port -> Port
 	[] htour > 0 & hevent = 0 & hlocation = 3 ->
 		1:(hevent'=6)&(htour'=htour-1);
 
