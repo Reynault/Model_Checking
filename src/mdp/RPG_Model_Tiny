@@ -1,4 +1,4 @@
-ctmc 
+dtmc 
 
 //-------CONFIGURATION-------//
 
@@ -159,7 +159,11 @@ module badguy = hero [
 endmodule
 
 label "hFinished" = (htour = 0);
-label "mFinished" = (htour = 0);
+label "mFinished" = (mtour = 0);
+
+label "heroWin" = (htour = 0) & (mtour = 0) & (hexp > mexp);
+label "badGuyWin" = (htour = 0) & (mtour = 0) & (hexp < mexp);
+label "noWin" = (htour = 0) & (mtour = 0) & (hexp = mexp);
 
 label "hNotOnARoad" = (hevent = 0);
 label "hThief" = (hevent = 1);
