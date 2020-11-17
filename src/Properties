@@ -1,4 +1,12 @@
-E [ F "finishedHero" ]
+E [ F "hFinished" ]
 
-A [ F "finishedHero" ]
+A [ F "hFinished" ]
+
+A [ G (!("hQuestQ1")&!("hQuestQ2")) ]
+
+E [ G (!("hQuestQ1")&!("hQuestQ2")) ]
+
+E [ F "hThief" ]
+
+P=? [ F "hThief" ]
 

@@ -1,0 +1,174 @@
+ctmc 
+
+//-------CONFIGURATION-------//
+
+// Valeurs limites pour les ressources
+const int N_EXP = 10;
+const int N_GOLD  = 10;
+
+// Valeurs liées aux événements
+// Voleur
+const int THIEF_GOLD = 5;
+// Accident
+const int ACCIDENT_TIME = 5;
+// Artéfact
+const int ARTEFACT_EXP = 7;
+// Trésor
+const int TREASURE_TIME = 6;
+const int TREASURE_GOLD = 6;
+// Art martiaux
+const int MARTIAL_COST = 3;
+const int MARTIAL_EXP = 5;
+
+// Valeurs liées aux quêtes
+// Q1
+const int Q1_UT = 5;
+const int Q1_GOLD = 1;
+const int Q1_EXP = 8;
+// Q2
+const int Q2_EXP = 5;
+
+// nombre de tours de la partie
+const int T = 10;
+
+// hero
+module hero
+	// ressources du joueur
+	hlocation: [0..2] init 0; // sa position dans la carte
+	hevent: [0..6] init 0;    // l'évènement en cours
+	hquest: [0..2] init 0;	  // la quête en cours
+	hquest2bool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
+	hgold: [0..N_GOLD] init 0;// l'or
+	hexp: [0..N_EXP] init 0;  // l'exp
+	htour: [0..T] init T;// tours restant de hero
+	
+	invariant
+		(htour >= 0) // invariant qui modélise la fin quand il n'y a plus de tour
+	endinvariant
+
+	// configuration des routes
+	[] htour > 0 & hevent = 0 & hlocation = 0 -> // route 0-1
+		 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=1)
+		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=1)
+		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=1)
+		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=1)
+		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=1)
+		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=1);
+	[] htour > 0 & hevent = 0 & hlocation = 1 -> // route 1-2
+		 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=2)
+		+0.1:(hevent'=2)&(htour'=htour-1)&(hlocation'=2)
+		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=2)
+		+0.2:(hevent'=4)&(htour'=htour-1)&(hlocation'=2)
+		+0.1:(hevent'=5)&(htour'=htour-1)&(hlocation'=2)
+		+0.3:(hevent'=6)&(htour'=htour-1)&(hlocation'=2);
+	[] htour > 0 & hevent = 0 & hlocation = 2 -> // route 2-0
+		 0.2:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
+		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
+		+0.1:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
+	[] htour > 0 & hevent = 0 & hlocation = 2 -> // route 2-1
+   	 	 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=1)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=1)
+		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=1)
+		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=1)
+		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=1)
+		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=1);
+		
+	// configuration des évènements
+	// voleur
+	[] hgold < THIEF_GOLD & hevent = 1 -> 
+		1:(hgold'=0)&(hevent'=0);
+	[] hgold >= THIEF_GOLD & hevent = 1 -> 
+		1:(hgold'=hgold-THIEF_GOLD)&(hevent'=0);
+
+	// accident
+	[] htour-ACCIDENT_TIME<0 & hevent = 2 -> 
+		1:(hevent'=0)&(htour'=0);
+	[] htour-ACCIDENT_TIME>=0 & hevent = 2 -> 
+		1:(hevent'=0)&(htour'=htour-ACCIDENT_TIME);
+
+	// artefact
+	[] (hexp+ARTEFACT_EXP) <= N_EXP & hevent = 3 -> 
+		1:(hexp'=hexp+ARTEFACT_EXP)&(hevent'=0);
+	[] (hexp+ARTEFACT_EXP) > N_EXP & hevent = 3 -> 
+		1:(hexp'=N_EXP)&(hevent'=0);
+
+	// trésor
+	[] (htour-TREASURE_TIME)<0 & hevent = 4 -> 
+		1:(hevent'=0)&(htour'=0);
+	[] (htour-TREASURE_TIME)>=0 & (hgold+TREASURE_GOLD) <= N_GOLD & hevent = 4 -> 
+		1:(hgold'=hgold+TREASURE_GOLD)&(hevent'=0)&(htour'=htour-TREASURE_TIME);
+	[] (htour-TREASURE_TIME)>=0 & (hgold+TREASURE_GOLD) > N_GOLD & hevent = 4 -> 
+		1:(hgold'=N_GOLD)&(hevent'=0)&(htour'=htour-TREASURE_TIME);
+
+	// maître des arts martiaux
+	[] hgold < MARTIAL_COST & hevent = 5 -> 
+		1:(hevent'=0);
+	[] hgold >= MARTIAL_COST & (hexp + MARTIAL_EXP) <= N_EXP& hevent = 5 -> 
+		1:(hgold'=hgold-MARTIAL_COST)&(hexp'=hexp+MARTIAL_EXP)&(hevent'=0);
+	[] hgold >= MARTIAL_COST & (hexp + MARTIAL_EXP) > N_EXP& hevent = 5 -> 
+		1:(hgold'=hgold-MARTIAL_COST)&(hexp'=N_EXP)&(hevent'=0);
+
+	// pas d'événements
+	[] hevent = 6 -> 
+		1:(hevent'=0);
+
+	// configuration des quêtes de type Q1
+	// entrée 1
+	[] htour >= Q1_UT & hevent = 0 & hgold >= Q1_GOLD & hlocation = 0 & hquest = 0 ->
+		1:(hquest'=1);
+	
+	// sortie 2
+	[] htour >= Q1_UT & hgold >= Q1_GOLD & (hexp + Q1_EXP) <= N_EXP & hquest = 1 ->
+		1:(hexp'=hexp+Q1_EXP)&(hgold'=hgold-1)&(hquest'=0)&(htour'=htour-Q1_UT);
+		
+	[] htour >= Q1_UT & hgold >= Q1_GOLD & (hexp + Q1_EXP) > N_EXP & hquest = 1 ->
+		1:(hexp'=N_EXP)&(hgold'=hgold-1)&(hquest'=0)&(htour'=htour-Q1_UT);
+
+	// configuration des quêtes de type Q2
+	// acceptation 2
+	[] htour > 0 & hevent = 0 & hlocation = 1 & hquest = 0 ->
+		1:(hquest'=2)&(hquest2bool'=false);
+	[] htour > 0 & hevent = 0 & hlocation = 2 & hquest = 0 ->
+		1:(hquest'=2)&(hquest2bool'=true);
+
+	// succès 2
+	[] htour > 0 & hevent = 0 & hquest2bool = true & (hexp + Q2_EXP) <= N_EXP & hlocation = 1 & hquest = 2 ->
+		1:(hquest'=0)&(hexp'=hexp+Q2_EXP);
+	[] htour > 0 & hevent = 0 & hquest2bool = true & (hexp + Q2_EXP) > N_EXP & hlocation = 1 & hquest = 2 ->
+		1:(hquest'=0)&(hexp'=N_EXP);
+
+	[] htour > 0 & hevent = 0 & hquest2bool = false & (hexp + Q2_EXP) <= N_EXP & hlocation = 2 & hquest = 2 ->
+		1:(hquest'=0)&(hexp'=hexp+Q2_EXP);
+	[] htour > 0 & hevent = 0 & hquest2bool = false & (hexp + Q2_EXP) > N_EXP & hlocation = 2 & hquest = 2 ->
+		1:(hquest'=0)&(hexp'=N_EXP);
+endmodule
+
+// méchant
+module badguy = hero [
+	hlocation = mlocation,
+	hevent = mevent,
+	hquest = mquest,
+	hgold = mgold,
+	hexp = mexp,
+	htour = mtour,
+	hquest2bool = mquest2bool
+]
+endmodule
+
+label "hFinished" = (htour = 0);
+label "mFinished" = (htour = 0);
+
+label "hNotOnARoad" = (hevent = 0);
+label "hThief" = (hevent = 1);
+label "hAccident" = (hevent = 2);
+label "hArtefact" = (hevent = 3);
+label "hTreasure" = (hevent = 4);
+label "hMartial" = (hevent = 5);
+label "hNoEvent" = (hevent = 6);
+
+label "hQuestQ1" = (hquest = 1);
+label "hQuestQ2" = (hquest = 2);
+

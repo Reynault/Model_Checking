@@ -60,7 +60,6 @@ module hero
 
 	// ---CONFIGURATION DES ROUTES---
 
-
 	[] x = 1 & hevent = 0 & hlocation = 0 -> 
 		 0.4:(hevent'=1)&(x'=0)&(hlocation'=1)
 		+0.05:(hevent'=2)&(x'=0)&(hlocation'=1)
@@ -144,14 +143,14 @@ module hero
 	// transitions d'acceptation de la deuxième quête
 	[] x=1 & hevent = 0 & hlocation = 1 & hquest = 0 ->
 		1:(hquest'=2)&(x'=0);
-	[] x=1 & hevent = 0 & hlocation = 2 & hquest = 0 ->
-		1:(hquest'=2)&(x'=0);
+	//[] x=1 & hevent = 0 & hlocation = 2 & hquest = 0 ->
+	//	1:(hquest'=2)&(x'=0);
 
 	// transitions de succès de la deuxième quête
-	[] x=1 & hevent = 0 & (expHero + 5) <= N_EXP & hlocation = 1 & hquest = 2 ->
-		1:(hquest'=0)&(expHero'=expHero+5)&(x'=0);
-	[] x=1 & hevent = 0 & (expHero + 5) > N_EXP & hlocation = 1 & hquest = 2 ->
-		1:(hquest'=0)&(expHero'=N_EXP)&(x'=0);
+	//[] x=1 & hevent = 0 & (expHero + 5) <= N_EXP & hlocation = 1 & hquest = 2 ->
+	//	1:(hquest'=0)&(expHero'=expHero+5)&(x'=0);
+	//[] x=1 & hevent = 0 & (expHero + 5) > N_EXP & hlocation = 1 & hquest = 2 ->
+	//	1:(hquest'=0)&(expHero'=N_EXP)&(x'=0);
 
 	[] x=1 & hevent = 0 & (expHero + 5) <= N_EXP & hlocation = 2 & hquest = 2 ->
 		1:(hquest'=0)&(expHero'=expHero+5)&(x'=0);
@@ -159,8 +158,26 @@ module hero
 		1:(hquest'=0)&(expHero'=N_EXP)&(x'=0);
 endmodule
 
-label "finishedHero" = (end = true);
+module badGuy = hero [
+	x = mx,
+	time = mtime,
+	end = mend,
+	hlocation = mlocation,
+	hquest = mquest,
+	hevent = mevent,
+	goldHero = goldM,
+	expHero = expM
+] endmodule
 
+label "hFinished" = (end = true);
 
+label "hNotOnARoad" = (hevent = 0);
+label "hThief" = (hevent = 1);
+label "hAccident" = (hevent = 2);
+label "hArtefact" = (hevent = 3);
+label "hTreasure" = (hevent = 4);
+label "hMartial" = (hevent = 5);
+label "hNoEvent" = (hevent = 6);
 
-
+label "hQuestQ1" = (hquest = 1);
+label "hQuestQ2" = (hquest = 2);
