@@ -1,0 +1,20 @@
+A [ F "hFinished" ]
+
+A [ F "mFinished" ]
+
+A [ F ("mFinished"&"hFinished") ]
+
+A [ F ("heroWin" | "badGuyWin" | "noWin") ]
+
+E [ F ("heroWin") ]
+
+E [ F ("badGuyWin") ]
+
+E [ F ("noWin") ]
+
+P=? [F("heroWin")]
+
+P=? [F("badGuyWin")]
+
+P=? [F("noWin")]
+

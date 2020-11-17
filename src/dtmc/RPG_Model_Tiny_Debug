@@ -1,4 +1,4 @@
-ctmc 
+dtmc 
 
 //-------CONFIGURATION-------//
 
@@ -76,6 +76,16 @@ module hero
 		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=1)
 		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=1);
 		
+	// configuration, self route
+	[] htour > 0 & hevent = 0 & hlocation = 0 -> // route 0-0
+		1:(hevent'=0)&(htour'=htour-1);
+
+	[] htour > 0 & hevent = 0 & hlocation = 1 -> // route 1-1
+		1:(hevent'=0)&(htour'=htour-1);
+
+	[] htour > 0 & hevent = 0 & hlocation = 2 -> // route 2-2
+		1:(hevent'=0)&(htour'=htour-1);
+
 	// configuration des évènements
 	// voleur
 	[] hgold < THIEF_GOLD & hevent = 1 -> 
@@ -159,7 +169,11 @@ module badguy = hero [
 endmodule
 
 label "hFinished" = (htour = 0);
-label "mFinished" = (htour = 0);
+label "mFinished" = (mtour = 0);
+
+label "heroWin" = (htour = 0) & (mtour = 0) & (hexp > mexp);
+label "badGuyWin" = (htour = 0) & (mtour = 0) & (hexp < mexp);
+label "noWin" = (htour = 0) & (mtour = 0) & (hexp = mexp);
 
 label "hNotOnARoad" = (hevent = 0);
 label "hThief" = (hevent = 1);
