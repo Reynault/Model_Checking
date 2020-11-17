@@ -1,4 +1,4 @@
-dtmc 
+mdp 
 
 //-------CONFIGURATION-------//
 
@@ -47,7 +47,7 @@ module hero
 	endinvariant
 
 	// configuration des routes
-	[] htour > 0 & hevent = 0 & hlocation = 0 -> // route 0-1
+	[hroute0_1] htour > 0 & hevent = 0 & hlocation = 0 -> // route 0-1
 		 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=1)
 		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=1)
 		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=1)
@@ -164,7 +164,8 @@ module badguy = hero [
 	hgold = mgold,
 	hexp = mexp,
 	htour = mtour,
-	hquest2bool = mquest2bool
+	hquest2bool = mquest2bool,
+	hroute0_1 = mroute0_1
 ]
 endmodule
 

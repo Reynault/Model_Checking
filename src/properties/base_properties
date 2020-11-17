@@ -4,7 +4,7 @@ A [ F "mFinished" ]
 
 A [ F ("mFinished"&"hFinished") ]
 
-A [ F ("heroWin" | "badGuyWin" | "noWin") ]
+A [ F ("heroWin"|"badGuyWin"|"noWin") ]
 
 E [ F ("heroWin") ]
 
@@ -12,9 +12,13 @@ E [ F ("badGuyWin") ]
 
 E [ F ("noWin") ]
 
-P=? [F("heroWin")]
+Pmax=? [ F ("heroWin") ]
 
-P=? [F("badGuyWin")]
+Pmax=? [ F ("badGuyWin") ]
 
-P=? [F("noWin")]
+Pmax=? [ F ("noWin") ]
+
+E [ F hexp=N_EXP ]
+
+E [ F mexp=N_EXP ]
 

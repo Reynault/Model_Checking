@@ -44,7 +44,6 @@ module hero
 	invariant
 		// invariants permettant de s'arrêter
 		(time <= T) &
-		(end = false) &
 		// invariants permettant d'éviter au héro
 		// de rester sur un évènement et de perdre du temps
 		(hevent=1 => x<=0) &
