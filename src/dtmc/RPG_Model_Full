@@ -220,8 +220,29 @@ module hero
    	 	 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=7)
 		+0.6:(hevent'=2)&(htour'=htour-1)&(hlocation'=7);
 
+	//Eglise -> Eglise
+	[] htour > 0 & hevent = 0 & hlocation = 0 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Marché -> Marché
+	[] htour > 0 & hevent = 0 & hlocation = 1 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Tour -> Tour
+	[] htour > 0 & hevent = 0 & hlocation = 2 ->
+		1:(hevent'=6)&(htour'=htour-1);
 	//Port -> Port
 	[] htour > 0 & hevent = 0 & hlocation = 3 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Gare -> Gare
+	[] htour > 0 & hevent = 0 & hlocation = 4 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Ville -> Ville
+	[] htour > 0 & hevent = 0 & hlocation = 5 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Foret -> Foret
+	[] htour > 0 & hevent = 0 & hlocation = 6 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Point de départ -> Point de départ
+	[] htour > 0 & hevent = 0 & hlocation = 7 ->
 		1:(hevent'=6)&(htour'=htour-1);
 
    //-----------------------------------------------------------------------------
