@@ -1,0 +1,650 @@
+mdp
+
+//-------CONFIGURATION-------//
+
+// Valeurs limites pour les ressources
+const int N_EXP = 10;
+const int N_GOLD  = 10;
+
+// Valeurs liées aux événements
+// Voleur
+const int THIEF_GOLD = 5;
+// Accident
+const int ACCIDENT_TIME = 5;
+// Artéfact
+const int ARTEFACT_EXP = 7;
+// Trésor
+const int TREASURE_TIME = 6;
+const int TREASURE_GOLD = 6;
+// Art martiaux
+const int MARTIAL_COST = 3;
+const int MARTIAL_EXP = 5;
+
+// Valeurs liées aux quêtes
+// Q1
+const int Q1_UT = 5;
+const int Q1_GOLD = 2;
+const int Q1_EXP = 4;
+// Q2
+const int Q2_UT = 3;
+const int Q2_GOLD = 4;
+const int Q2_EXP = 4;
+// Q3
+const int Q3_EXP = 7;
+// Q4
+const int Q4_UT = 6;
+const int Q4_GOLD = 1;
+const int Q4_EXP = 3;
+// Q5
+const int Q5_EXP = 17;
+// Q6
+const int Q6_UT = 2;
+const int Q6_GOLD = 6;
+const int Q6_EXP = 6;
+// Q7
+const int Q7_EXP = 4;
+
+
+// nombre de tours de la partie
+const int T = 10;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+module hero
+	// ressources du joueur
+	hlocation: [0..7] init 7; // sa position dans la carte
+	hevent: [0..6] init 0;    // l'évènement en cours
+	hquest: [0..7] init 0;	  // la quête en cours
+	hquestbool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
+	hgold: [0..N_GOLD] init 0;// l'or
+	hexp: [0..N_EXP] init 0;  // l'exp
+	htour: [0..T] init T;// tours restant de hero
+
+	invariant
+		(htour >= 0) // invariant qui modélise la fin quand il n'y a plus de tour
+	endinvariant
+
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+	// ---CONFIGURATION DES ROUTES---
+
+	// 0 : Eglise
+	// 1 : Marché
+	// 2 : Tour
+	// 3 : Port
+	// 4 : Gare
+	// 5 : Ville
+	// 6 : Foret
+	// 7 : Point de départ	
+
+	//Point de départ -> Ville
+	[] htour > 0 & hevent = 0 & hlocation = 7 -> 
+   	 	 0.3:(hevent'=1)&(htour'=htour-1)&(hlocation'=5)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=5)
+		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=5)
+		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=5)
+		+0.1:(hevent'=5)&(htour'=htour-1)&(hlocation'=5)
+		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=5);
+
+	//Ville -> Foret
+	[] htour > 0 & hevent = 0 & hlocation = 5 -> 
+   	 	 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=6)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=6)
+		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=6)
+		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=6)
+		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=6)
+		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=6);
+
+	//Foret -> Eglise
+	[] htour > 0 & hevent = 0 & hlocation = 6 -> 
+   	 	 0.2:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
+		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
+		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
+		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
+
+	//Eglise -> Marché
+	[] htour > 0 &  hevent = 0 & hlocation = 0 -> 
+		 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=1)
+		+0.1:(hevent'=2)&(htour'=htour-1)&(hlocation'=1)
+		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=1)
+		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=1)
+		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=1)
+		+0.6:(hevent'=6)&(htour'=htour-1)&(hlocation'=1);
+
+	//Marché -> Eglise
+	[] htour > 0 & hevent = 0 & hlocation = 1 -> 
+		 0.05:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
+		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
+		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
+		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
+		+0.6:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
+
+	//Eglise -> Eglise
+	[] htour > 0 & hevent = 0 & hlocation = 0 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Marché -> Marché
+	[] htour > 0 & hevent = 0 & hlocation = 1 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Ville -> Ville
+	[] htour > 0 & hevent = 0 & hlocation = 5 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Foret -> Foret
+	[] htour > 0 & hevent = 0 & hlocation = 6 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Point de départ -> Point de départ
+	[] htour > 0 & hevent = 0 & hlocation = 7 ->
+		1:(hevent'=6)&(htour'=htour-1);
+
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+	// ---CONFIGURATION DES EVENEMENTS---
+
+	// voleur
+	[] hgold < THIEF_GOLD & hevent = 1 -> 
+		1:(hgold'=0)&(hevent'=0);
+	[] hgold >= THIEF_GOLD & hevent = 1 -> 
+		1:(hgold'=hgold-THIEF_GOLD)&(hevent'=0);
+
+	// accident
+	[] htour-ACCIDENT_TIME<0 & hevent = 2 -> 
+		1:(hevent'=0)&(htour'=0);
+	[] htour-ACCIDENT_TIME>=0 & hevent = 2 -> 
+		1:(hevent'=0)&(htour'=htour-ACCIDENT_TIME);
+
+	// artefact
+	[] (hexp+ARTEFACT_EXP) <= N_EXP & hevent = 3 -> 
+		1:(hexp'=hexp+ARTEFACT_EXP)&(hevent'=0);
+	[] (hexp+ARTEFACT_EXP) > N_EXP & hevent = 3 -> 
+		1:(hexp'=N_EXP)&(hevent'=0);
+
+	// trésor
+	[] (htour-TREASURE_TIME)<0 & hevent = 4 -> 
+		1:(hevent'=0)&(htour'=0);
+	[] (htour-TREASURE_TIME)>=0 & (hgold+TREASURE_GOLD) <= N_GOLD & hevent = 4 -> 
+		1:(hgold'=hgold+TREASURE_GOLD)&(hevent'=0)&(htour'=htour-TREASURE_TIME);
+	[] (htour-TREASURE_TIME)>=0 & (hgold+TREASURE_GOLD) > N_GOLD & hevent = 4 -> 
+		1:(hgold'=N_GOLD)&(hevent'=0)&(htour'=htour-TREASURE_TIME);
+
+	// maître des arts martiaux
+	[] hgold < MARTIAL_COST & hevent = 5 -> 
+		1:(hevent'=0);
+	[] hgold >= MARTIAL_COST & (hexp + MARTIAL_EXP) <= N_EXP& hevent = 5 -> 
+		1:(hgold'=hgold-MARTIAL_COST)&(hexp'=hexp+MARTIAL_EXP)&(hevent'=0);
+	[] hgold >= MARTIAL_COST & (hexp + MARTIAL_EXP) > N_EXP& hevent = 5 -> 
+		1:(hgold'=hgold-MARTIAL_COST)&(hexp'=N_EXP)&(hevent'=0);
+
+	// pas d'événements
+	[] hevent = 6 -> 
+		1:(hevent'=0);
+
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+//-----------------------QUÊTES Q1-----------------------
+
+	// ---CONFIGURATION DE LA QUÊTE 1---
+
+	// entrée 1
+	[] htour >= Q1_UT & hevent = 0 & hgold >= Q1_GOLD & hlocation = 5 & hquest = 0 ->
+		1:(hquest'=1);
+	
+	// sortie 2
+	[] htour >= Q1_UT & hgold >= Q1_GOLD & (hexp + Q1_EXP) <= N_EXP & hquest = 1 ->
+		1:(hexp'=hexp+Q1_EXP)&(hgold'=hgold-2)&(hquest'=0)&(htour'=htour-Q1_UT);
+		
+	[] htour >= Q1_UT & hgold >= Q1_GOLD & (hexp + Q1_EXP) > N_EXP & hquest = 1 ->
+		1:(hexp'=N_EXP)&(hgold'=hgold-2)&(hquest'=0)&(htour'=htour-Q1_UT);
+
+	// ---CONFIGURATION DE LA QUÊTE 2---
+
+	// entrée 1
+	[] htour >= Q2_UT & hevent = 0 & hgold >= Q2_GOLD & hlocation = 5 & hquest = 0 ->
+		1:(hquest'=2);
+	
+	// sortie 2
+	[] htour >= Q2_UT & hgold >= Q2_GOLD & (hexp + Q2_EXP) <= N_EXP & hquest = 2 ->
+		1:(hexp'=hexp+Q2_EXP)&(hgold'=hgold-4)&(hquest'=0)&(htour'=htour-Q2_UT);
+		
+	[] htour >= Q2_UT & hgold >= Q2_GOLD & (hexp + Q2_EXP) > N_EXP & hquest = 2 ->
+		1:(hexp'=N_EXP)&(hgold'=hgold-4)&(hquest'=0)&(htour'=htour-Q2_UT);
+
+	// ---CONFIGURATION DE LA QUÊTE 4---
+
+	// entrée 1
+	[] htour >= Q4_UT & hevent = 0 & hgold >= Q4_GOLD & hlocation = 0 & hquest = 0 ->
+		1:(hquest'=4);
+	
+	// sortie 2
+	[] htour >= Q4_UT & hgold >= Q4_GOLD & (hexp + Q4_EXP) <= N_EXP & hquest = 4 ->
+		1:(hexp'=hexp+Q4_EXP)&(hgold'=hgold-1)&(hquest'=0)&(htour'=htour-Q4_UT);
+		
+	[] htour >= Q4_UT & hgold >= Q4_GOLD & (hexp + Q4_EXP) > N_EXP & hquest = 4 ->
+		1:(hexp'=N_EXP)&(hgold'=hgold-1)&(hquest'=0)&(htour'=htour-Q4_UT);
+
+	// ---CONFIGURATION DE LA QUÊTE 6---
+
+	// entrée 1
+	[] htour >= Q6_UT & hevent = 0 & hgold >= Q6_GOLD & hlocation = 6 & hquest = 0 ->
+		1:(hquest'=6);
+	
+	// sortie 2
+	[] htour >= Q6_UT & hgold >= Q6_GOLD & (hexp + Q6_EXP) <= N_EXP & hquest = 6 ->
+		1:(hexp'=hexp+Q6_EXP)&(hgold'=hgold-1)&(hquest'=0)&(htour'=htour-Q6_UT);
+		
+	[] htour >= Q6_UT & hgold >= Q6_GOLD & (hexp + Q6_EXP) > N_EXP & hquest = 6 ->
+		1:(hexp'=N_EXP)&(hgold'=hgold-6)&(hquest'=0)&(htour'=htour-Q6_UT);
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+   //-----------------------QUÊTES DOUBLE-----------------------
+
+	// ---CONFIGURATION DE LA QUÊTE 3---
+	
+	// acceptation 3
+	[] htour > 0 & hevent = 0 & hlocation = 6 & hquest = 0 ->
+		1:(hquest'=3)&(hquestbool'=false);
+	[] htour > 0 & hevent = 0 & hlocation = 7 & hquest = 0 ->
+		1:(hquest'=3)&(hquestbool'=true);
+
+	// succès 3
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q3_EXP) <= N_EXP & hlocation = 6 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=hexp+Q3_EXP);
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q3_EXP) > N_EXP & hlocation = 6 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=N_EXP);
+
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q3_EXP) <= N_EXP & hlocation = 7 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=hexp+Q3_EXP);
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q3_EXP) > N_EXP & hlocation = 7 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=N_EXP);
+
+endmodule
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+// méchant
+module badguy
+	// ressources du joueur
+	mlocation: [0..7] init 7; // sa position dans la carte
+	mevent: [0..6] init 0;    // l'évènement en cours
+	mquest: [0..7] init 0;	  // la quête en cours
+	mquestbool: bool init false; // booléen qui permet de vérifier le départ d'un quête de type Q2
+	mgold: [0..N_GOLD] init 0;// l'or
+	mexp: [0..N_EXP] init 0;  // l'exp
+	mtour: [0..T] init T;// tours restant de mero
+
+	invariant
+		(mtour >= 0) // invariant qui modélise la fin quand il n'y a plus de tour
+	endinvariant
+
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+	// ---CONFIGURATION DES ROUTES---
+
+	// 0 : Eglise
+	// 1 : Marcmé
+	// 2 : Tour
+	// 3 : Port
+	// 4 : Gare
+	// 5 : Ville
+	// 6 : Foret
+	// 7 : Point de départ	
+
+	//Eglise -> Marcmé
+	[] mtour > 0 &  mevent = 0 & mlocation = 0 -> 
+		 0.1:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.1:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.1:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.6:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=1);
+
+	//Marcmé -> Eglise
+	[] mtour > 0 & mevent = 0 & mlocation = 1 -> 
+		 0.05:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.2:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.6:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=0);
+
+	//Marcmé -> Tour
+	[] mtour > 0 & mevent = 0 & mlocation = 1 -> 
+		 0.6:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.2:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=2);
+
+
+	//Tour -> Port
+	[] mtour > 0 & mevent = 0 & mlocation = 2 -> 
+		 0.3:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.02:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.08:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.4:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.15:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=3);
+
+	//Tour -> Foret
+	[] mtour > 0 & mevent = 0 & mlocation = 2 -> 
+		 0.4:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.3:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.15:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=6);
+
+	//Foret -> Marcmé
+	[] mtour > 0 & mevent = 0 & mlocation = 6 -> 
+		 0.3:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.4:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.1:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=1)
+		+0.1:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=1);
+
+	//Foret -> Eglise
+	[] mtour > 0 & mevent = 0 & mlocation = 6 -> 
+   	 	 0.2:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.2:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.2:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.1:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.25:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=0);
+
+	//Gare -> Port
+	[] mtour > 0 &  mevent = 0 & mlocation = 4 -> 
+   	 	 0.6:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=3)
+		+0.2:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=3);
+
+	//Gare -> Point de départ
+	[] mtour > 0 & mevent = 0 & mlocation = 4 -> 
+   	 	 0.1:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=7)
+		+0.4:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=7)
+		+0.1:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=7)
+		+0.2:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=7)
+		+0.1:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=7)
+		+0.1:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=7);
+
+	//Gare -> Ville
+	[] mtour > 0 &  mevent = 0 & mlocation = 4 -> 
+   	 	 0.1:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.4:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.35:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=5);
+
+	//Ville -> Gare
+	[] mtour > 0 & mevent = 0 & mlocation = 5 -> 
+   	 	 0.1:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=4)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=4)
+		+0.2:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=4)
+		+0.2:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=4)
+		+0.1:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=4)
+		+0.35:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=4);
+
+	//Ville -> Foret
+	[] mtour > 0 & mevent = 0 & mlocation = 5 -> 
+   	 	 0.4:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.2:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.05:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=6)
+		+0.25:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=6);
+
+	//Ville -> Eglise
+	[] mtour > 0 & mevent = 0 & mlocation = 5 -> 
+   	 	 0.05:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.3:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.2:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.2:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=0)
+		+0.2:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=0);
+
+	//Point de départ -> Ville
+	[] mtour > 0 & mevent = 0 & mlocation = 7 -> 
+   	 	 0.3:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.2:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.1:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.1:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.1:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=5)
+		+0.2:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=5);
+
+	//Point de départ -> Tour
+	[] mtour > 0 & mevent = 0 & mlocation = 7 -> 
+   	 	 0.4:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=3)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.05:(mevent'=4)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.2:(mevent'=5)&(mtour'=mtour-1)&(mlocation'=2)
+		+0.25:(mevent'=6)&(mtour'=mtour-1)&(mlocation'=2);
+
+	//Tour -> Point de départ
+	[] mtour > 0 & mevent = 0 & mlocation = 2 -> 
+   	 	 0.4:(mevent'=1)&(mtour'=mtour-1)&(mlocation'=7)
+		+0.6:(mevent'=2)&(mtour'=mtour-1)&(mlocation'=7);
+
+	//Eglise -> Eglise
+	[] mtour > 0 & mevent = 0 & mlocation = 0 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Marcmé -> Marcmé
+	[] mtour > 0 & mevent = 0 & mlocation = 1 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Tour -> Tour
+	[] mtour > 0 & mevent = 0 & mlocation = 2 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Port -> Port
+	[] mtour > 0 & mevent = 0 & mlocation = 3 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Gare -> Gare
+	[] mtour > 0 & mevent = 0 & mlocation = 4 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Ville -> Ville
+	[] mtour > 0 & mevent = 0 & mlocation = 5 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Foret -> Foret
+	[] mtour > 0 & mevent = 0 & mlocation = 6 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+	//Point de départ -> Point de départ
+	[] mtour > 0 & mevent = 0 & mlocation = 7 ->
+		1:(mevent'=6)&(mtour'=mtour-1);
+
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+	// ---CONFIGURATION DES EVENEMENTS---
+
+	// voleur
+	[] mgold < THIEF_GOLD & mevent = 1 -> 
+		1:(mgold'=0)&(mevent'=0);
+	[] mgold >= THIEF_GOLD & mevent = 1 -> 
+		1:(mgold'=mgold-THIEF_GOLD)&(mevent'=0);
+
+	// accident
+	[] mtour-ACCIDENT_TIME<0 & mevent = 2 -> 
+		1:(mevent'=0)&(mtour'=0);
+	[] mtour-ACCIDENT_TIME>=0 & mevent = 2 -> 
+		1:(mevent'=0)&(mtour'=mtour-ACCIDENT_TIME);
+
+	// artefact
+	[] (mexp+ARTEFACT_EXP) <= N_EXP & mevent = 3 -> 
+		1:(mexp'=mexp+ARTEFACT_EXP)&(mevent'=0);
+	[] (mexp+ARTEFACT_EXP) > N_EXP & mevent = 3 -> 
+		1:(mexp'=N_EXP)&(mevent'=0);
+
+	// trésor
+	[] (mtour-TREASURE_TIME)<0 & mevent = 4 -> 
+		1:(mevent'=0)&(mtour'=0);
+	[] (mtour-TREASURE_TIME)>=0 & (mgold+TREASURE_GOLD) <= N_GOLD & mevent = 4 -> 
+		1:(mgold'=mgold+TREASURE_GOLD)&(mevent'=0)&(mtour'=mtour-TREASURE_TIME);
+	[] (mtour-TREASURE_TIME)>=0 & (mgold+TREASURE_GOLD) > N_GOLD & mevent = 4 -> 
+		1:(mgold'=N_GOLD)&(mevent'=0)&(mtour'=mtour-TREASURE_TIME);
+
+	// maître des arts martiaux
+	[] mgold < MARTIAL_COST & mevent = 5 -> 
+		1:(mevent'=0);
+	[] mgold >= MARTIAL_COST & (mexp + MARTIAL_EXP) <= N_EXP& mevent = 5 -> 
+		1:(mgold'=mgold-MARTIAL_COST)&(mexp'=mexp+MARTIAL_EXP)&(mevent'=0);
+	[] mgold >= MARTIAL_COST & (mexp + MARTIAL_EXP) > N_EXP& mevent = 5 -> 
+		1:(mgold'=mgold-MARTIAL_COST)&(mexp'=N_EXP)&(mevent'=0);
+
+	// pas d'événements
+	[] mevent = 6 -> 
+		1:(mevent'=0);
+
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+
+   //-----------------------QUÊTES Q1-----------------------
+
+	// ---CONFIGURATION DE LA QUÊTE 1---
+
+	// entrée 1
+	[] mtour >= Q1_UT & mevent = 0 & mgold >= Q1_GOLD & mlocation = 5 & mquest = 0 ->
+		1:(mquest'=1);
+	
+	// sortie 2
+	[] mtour >= Q1_UT & mgold >= Q1_GOLD & (mexp + Q1_EXP) <= N_EXP & mquest = 1 ->
+		1:(mexp'=mexp+Q1_EXP)&(mgold'=mgold-2)&(mquest'=0)&(mtour'=mtour-Q1_UT);
+		
+	[] mtour >= Q1_UT & mgold >= Q1_GOLD & (mexp + Q1_EXP) > N_EXP & mquest = 1 ->
+		1:(mexp'=N_EXP)&(mgold'=mgold-2)&(mquest'=0)&(mtour'=mtour-Q1_UT);
+
+	// ---CONFIGURATION DE LA QUÊTE 2---
+
+	// entrée 1
+	[] mtour >= Q2_UT & mevent = 0 & mgold >= Q2_GOLD & mlocation = 5 & mquest = 0 ->
+		1:(mquest'=2);
+	
+	// sortie 2
+	[] mtour >= Q2_UT & mgold >= Q2_GOLD & (mexp + Q2_EXP) <= N_EXP & mquest = 2 ->
+		1:(mexp'=mexp+Q2_EXP)&(mgold'=mgold-4)&(mquest'=0)&(mtour'=mtour-Q2_UT);
+		
+	[] mtour >= Q2_UT & mgold >= Q2_GOLD & (mexp + Q2_EXP) > N_EXP & mquest = 2 ->
+		1:(mexp'=N_EXP)&(mgold'=mgold-4)&(mquest'=0)&(mtour'=mtour-Q2_UT);
+
+	// ---CONFIGURATION DE LA QUÊTE 4---
+
+	// entrée 1
+	[] mtour >= Q4_UT & mevent = 0 & mgold >= Q4_GOLD & mlocation = 0 & mquest = 0 ->
+		1:(mquest'=4);
+	
+	// sortie 2
+	[] mtour >= Q4_UT & mgold >= Q4_GOLD & (mexp + Q4_EXP) <= N_EXP & mquest = 4 ->
+		1:(mexp'=mexp+Q4_EXP)&(mgold'=mgold-1)&(mquest'=0)&(mtour'=mtour-Q4_UT);
+		
+	[] mtour >= Q4_UT & mgold >= Q4_GOLD & (mexp + Q4_EXP) > N_EXP & mquest = 4 ->
+		1:(mexp'=N_EXP)&(mgold'=mgold-1)&(mquest'=0)&(mtour'=mtour-Q4_UT);
+
+	// ---CONFIGURATION DE LA QUÊTE 6---
+
+	// entrée 1
+	[] mtour >= Q6_UT & mevent = 0 & mgold >= Q6_GOLD & mlocation = 6 & mquest = 0 ->
+		1:(mquest'=6);
+	
+	// sortie 2
+	[] mtour >= Q6_UT & mgold >= Q6_GOLD & (mexp + Q6_EXP) <= N_EXP & mquest = 6 ->
+		1:(mexp'=mexp+Q6_EXP)&(mgold'=mgold-1)&(mquest'=0)&(mtour'=mtour-Q6_UT);
+		
+	[] mtour >= Q6_UT & mgold >= Q6_GOLD & (mexp + Q6_EXP) > N_EXP & mquest = 6 ->
+		1:(mexp'=N_EXP)&(mgold'=mgold-6)&(mquest'=0)&(mtour'=mtour-Q6_UT);
+
+   //-----------------------QUÊTES DOUBLE-----------------------
+
+	// ---CONFIGURATION DE LA QUÊTE 3---
+	
+	// acceptation 3
+	[] mtour > 0 & mevent = 0 & mlocation = 6 & mquest = 0 ->
+		1:(mquest'=3)&(mquestbool'=false);
+	[] mtour > 0 & mevent = 0 & mlocation = 7 & mquest = 0 ->
+		1:(mquest'=3)&(mquestbool'=true);
+
+	// succès 3
+	[] mtour > 0 & mevent = 0 & mquestbool = true & (mexp + Q3_EXP) <= N_EXP & mlocation = 6 & mquest = 3 ->
+		1:(mquest'=0)&(mexp'=mexp+Q3_EXP);
+	[] mtour > 0 & mevent = 0 & mquestbool = true & (mexp + Q3_EXP) > N_EXP & mlocation = 6 & mquest = 3 ->
+		1:(mquest'=0)&(mexp'=N_EXP);
+
+	[] mtour > 0 & mevent = 0 & mquestbool = false & (mexp + Q3_EXP) <= N_EXP & mlocation = 7 & mquest = 3 ->
+		1:(mquest'=0)&(mexp'=mexp+Q3_EXP);
+	[] mtour > 0 & mevent = 0 & mquestbool = false & (mexp + Q3_EXP) > N_EXP & mlocation = 7 & mquest = 3 ->
+		1:(mquest'=0)&(mexp'=N_EXP);
+
+	// ---CONFIGURATION DE LA QUÊTE 5---
+	
+	// acceptation 5
+	[] mtour > 0 & mevent = 0 & mlocation = 1 & mquest = 0 ->
+		1:(mquest'=5)&(mquestbool'=false);
+	[] mtour > 0 & mevent = 0 & mlocation = 3 & mquest = 0 ->
+		1:(mquest'=5)&(mquestbool'=true);
+
+	// succès 5
+	[] mtour > 0 & mevent = 0 & mquestbool = true & (mexp + Q5_EXP) <= N_EXP & mlocation = 1 & mquest = 5 ->
+		1:(mquest'=0)&(mexp'=mexp+Q5_EXP);
+	[] mtour > 0 & mevent = 0 & mquestbool = true & (mexp + Q5_EXP) > N_EXP & mlocation = 1 & mquest = 5 ->
+		1:(mquest'=0)&(mexp'=N_EXP);
+
+	[] mtour > 0 & mevent = 0 & mquestbool = false & (mexp + Q5_EXP) <= N_EXP & mlocation = 3 & mquest = 5 ->
+		1:(mquest'=0)&(mexp'=mexp+Q5_EXP);
+	[] mtour > 0 & mevent = 0 & mquestbool = false & (mexp + Q5_EXP) > N_EXP & mlocation = 3 & mquest = 5 ->
+		1:(mquest'=0)&(mexp'=N_EXP);
+
+	// ---CONFIGURATION DE LA QUÊTE 7---
+
+	// acceptation 7
+	[] mtour > 0 & mevent = 0 & mlocation = 2 & mquest = 0 ->
+		1:(mquest'=7)&(mquestbool'=false);
+	[] mtour > 0 & mevent = 0 & mlocation = 4 & mquest = 0 ->
+		1:(mquest'=7)&(mquestbool'=true);
+
+	// succès 7
+	[] mtour > 0 & mevent = 0 & mquestbool = true & (mexp + Q7_EXP) <= N_EXP & mlocation = 2 & mquest = 7 ->
+		1:(mquest'=0)&(mexp'=mexp+Q7_EXP);
+	[] mtour > 0 & mevent = 0 & mquestbool = true & (mexp + Q7_EXP) > N_EXP & mlocation = 2 & mquest = 7 ->
+		1:(mquest'=0)&(mexp'=N_EXP);
+
+	[] mtour > 0 & mevent = 0 & mquestbool = false & (mexp + Q7_EXP) <= N_EXP & mlocation = 4 & mquest = 7 ->
+		1:(mquest'=0)&(mexp'=mexp+Q7_EXP);
+	[] mtour > 0 & mevent = 0 & mquestbool = false & (mexp + Q7_EXP) > N_EXP & mlocation = 4 & mquest = 7 ->
+		1:(mquest'=0)&(mexp'=N_EXP);
+endmodule
+
+
+label "hFinished" = (htour = 0);
+label "mFinished" = (mtour = 0);
+
+label "heroWin" = (htour = 0) & (mtour = 0) & (hexp > mexp);
+label "badGuyWin" = (htour = 0) & (mtour = 0) & (hexp < mexp);
+label "noWin" = (htour = 0) & (mtour = 0) & (hexp = mexp);
+
+label "hNotOnARoad" = (hevent = 0);
+label "hThief" = (hevent = 1);
+label "hAccident" = (hevent = 2);
+label "hArtefact" = (hevent = 3);
+label "hTreasure" = (hevent = 4);
+label "hMartial" = (hevent = 5);
+label "hNoEvent" = (hevent = 0)|(hevent = 6);
+
+label "hQuestQ1" = (hquest = 1)|(hquest = 2)|(hquest = 4)|(hquest = 6);
+label "hQuestQ2" = (hquest = 3)|(hquest = 5)|(hquest = 7);
+label "noQuest" = (hquest = 0);
+
+
+
+
+
