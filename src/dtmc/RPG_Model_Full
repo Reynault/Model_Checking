@@ -435,7 +435,7 @@ label "hAccident" = (hevent = 2);
 label "hArtefact" = (hevent = 3);
 label "hTreasure" = (hevent = 4);
 label "hMartial" = (hevent = 5);
-label "hNoEvent" = (hevent = 6);
+label "hNoEvent" = (hevent = 0)|(hevent = 6);
 
 label "hQuestQ1" = (hquest = 1)|(hquest = 2)|(hquest = 4)|(hquest = 6);
 label "hQuestQ2" = (hquest = 3)|(hquest = 5)|(hquest = 7);
