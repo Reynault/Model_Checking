@@ -79,105 +79,14 @@ module hero
 	// 6 : Foret
 	// 7 : Point de départ	
 
-	//Eglise -> Marché
-	[] htour > 0 &  hevent = 0 & hlocation = 0 -> 
-		 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=1)
-		+0.1:(hevent'=2)&(htour'=htour-1)&(hlocation'=1)
-		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=1)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=1)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=1)
-		+0.6:(hevent'=6)&(htour'=htour-1)&(hlocation'=1);
-
-	//Marché -> Eglise
-	[] htour > 0 & hevent = 0 & hlocation = 1 -> 
-		 0.05:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
-		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
-		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
-		+0.6:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
-
-	//Marché -> Tour
-	[] htour > 0 & hevent = 0 & hlocation = 1 -> 
-		 0.6:(hevent'=1)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=2)
-		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=2);
-
-
-	//Tour -> Port
-	[] htour > 0 & hevent = 0 & hlocation = 2 -> 
-		 0.3:(hevent'=1)&(htour'=htour-1)&(hlocation'=3)
-		+0.02:(hevent'=2)&(htour'=htour-1)&(hlocation'=3)
-		+0.08:(hevent'=3)&(htour'=htour-1)&(hlocation'=3)
-		+0.4:(hevent'=4)&(htour'=htour-1)&(hlocation'=3)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=3)
-		+0.15:(hevent'=6)&(htour'=htour-1)&(hlocation'=3);
-
-	//Tour -> Foret
-	[] htour > 0 & hevent = 0 & hlocation = 2 -> 
-		 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=6)
-		+0.3:(hevent'=2)&(htour'=htour-1)&(hlocation'=6)
-		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=6)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=6)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=6)
-		+0.15:(hevent'=6)&(htour'=htour-1)&(hlocation'=6);
-
-	//Foret -> Marché
-	[] htour > 0 & hevent = 0 & hlocation = 6 -> 
-		 0.3:(hevent'=1)&(htour'=htour-1)&(hlocation'=1)
-		+0.4:(hevent'=2)&(htour'=htour-1)&(hlocation'=1)
-		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=1)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=1)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=1)
-		+0.1:(hevent'=6)&(htour'=htour-1)&(hlocation'=1);
-
-	//Foret -> Eglise
-	[] htour > 0 & hevent = 0 & hlocation = 6 -> 
-   	 	 0.2:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
-		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
-		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
-		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
-		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
-
-	//Gare -> Port
-	[] htour > 0 &  hevent = 0 & hlocation = 4 -> 
-   	 	 0.6:(hevent'=1)&(htour'=htour-1)&(hlocation'=3)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=3)
-		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=3)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=3)
-		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=3)
-		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=3);
-
-	//Gare -> Point de départ
-	[] htour > 0 & hevent = 0 & hlocation = 4 -> 
-   	 	 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=7)
-		+0.4:(hevent'=2)&(htour'=htour-1)&(hlocation'=7)
-		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=7)
-		+0.2:(hevent'=4)&(htour'=htour-1)&(hlocation'=7)
-		+0.1:(hevent'=5)&(htour'=htour-1)&(hlocation'=7)
-		+0.1:(hevent'=6)&(htour'=htour-1)&(hlocation'=7);
-
-	//Gare -> Ville
-	[] htour > 0 &  hevent = 0 & hlocation = 4 -> 
-   	 	 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=5)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=5)
-		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=5)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=5)
-		+0.4:(hevent'=5)&(htour'=htour-1)&(hlocation'=5)
-		+0.35:(hevent'=6)&(htour'=htour-1)&(hlocation'=5);
-
-	//Ville -> Gare
-	[] htour > 0 & hevent = 0 & hlocation = 5 -> 
-   	 	 0.1:(hevent'=1)&(htour'=htour-1)&(hlocation'=4)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=4)
-		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=4)
-		+0.2:(hevent'=4)&(htour'=htour-1)&(hlocation'=4)
-		+0.1:(hevent'=5)&(htour'=htour-1)&(hlocation'=4)
-		+0.35:(hevent'=6)&(htour'=htour-1)&(hlocation'=4);
+	//Point de départ -> Ville
+	[] htour > 0 & hevent = 0 & hlocation = 7 -> 
+   	 	 0.3:(hevent'=1)&(htour'=htour-1)&(hlocation'=5)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=5)
+		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=5)
+		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=5)
+		+0.1:(hevent'=5)&(htour'=htour-1)&(hlocation'=5)
+		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=5);
 
 	//Ville -> Foret
 	[] htour > 0 & hevent = 0 & hlocation = 5 -> 
@@ -188,40 +97,26 @@ module hero
 		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=6)
 		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=6);
 
-	//Ville -> Eglise
-	[] htour > 0 & hevent = 0 & hlocation = 5 -> 
-   	 	 0.05:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
-		+0.3:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
-		+0.2:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
-		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
-		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
+	//Foret -> Eglise
+	[] htour > 0 & hevent = 0 & hlocation = 6 -> 
+   	 	 0.2:(hevent'=1)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=0)
+		+0.2:(hevent'=3)&(htour'=htour-1)&(hlocation'=0)
+		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=0)
+		+0.05:(hevent'=5)&(htour'=htour-1)&(hlocation'=0)
+		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=0);
 
-	//Point de départ -> Ville
-	[] htour > 0 & hevent = 0 & hlocation = 7 -> 
-   	 	 0.3:(hevent'=1)&(htour'=htour-1)&(hlocation'=5)
-		+0.2:(hevent'=2)&(htour'=htour-1)&(hlocation'=5)
-		+0.1:(hevent'=3)&(htour'=htour-1)&(hlocation'=5)
-		+0.1:(hevent'=4)&(htour'=htour-1)&(hlocation'=5)
-		+0.1:(hevent'=5)&(htour'=htour-1)&(hlocation'=5)
-		+0.2:(hevent'=6)&(htour'=htour-1)&(hlocation'=5);
-
-	//Point de départ -> Tour
-	[] htour > 0 & hevent = 0 & hlocation = 7 -> 
-   	 	 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=2)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=3)&(htour'=htour-1)&(hlocation'=2)
-		+0.05:(hevent'=4)&(htour'=htour-1)&(hlocation'=2)
-		+0.2:(hevent'=5)&(htour'=htour-1)&(hlocation'=2)
-		+0.25:(hevent'=6)&(htour'=htour-1)&(hlocation'=2);
-
-	//Tour -> Point de départ
-	[] htour > 0 & hevent = 0 & hlocation = 2 -> 
-   	 	 0.4:(hevent'=1)&(htour'=htour-1)&(hlocation'=7)
-		+0.6:(hevent'=2)&(htour'=htour-1)&(hlocation'=7);
-
-	//Port -> Port
-	[] htour > 0 & hevent = 0 & hlocation = 3 ->
+	//Eglise -> Eglise
+	[] htour > 0 & hevent = 0 & hlocation = 0 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Ville -> Ville
+	[] htour > 0 & hevent = 0 & hlocation = 5 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Foret -> Foret
+	[] htour > 0 & hevent = 0 & hlocation = 6 ->
+		1:(hevent'=6)&(htour'=htour-1);
+	//Point de départ -> Point de départ
+	[] htour > 0 & hevent = 0 & hlocation = 7 ->
 		1:(hevent'=6)&(htour'=htour-1);
 
    //-----------------------------------------------------------------------------
@@ -323,6 +218,27 @@ module hero
 		
 	[] htour >= Q6_UT & hgold >= Q6_GOLD & (hexp + Q6_EXP) > N_EXP & hquest = 6 ->
 		1:(hexp'=N_EXP)&(hgold'=hgold-6)&(hquest'=0)&(htour'=htour-Q6_UT);
+
+ 	//-----------------------QUÊTES DOUBLE-----------------------
+
+	// ---CONFIGURATION DE LA QUÊTE 3---
+	
+	// acceptation 3
+	[] htour > 0 & hevent = 0 & hlocation = 6 & hquest = 0 ->
+		1:(hquest'=3)&(hquestbool'=false);
+	[] htour > 0 & hevent = 0 & hlocation = 7 & hquest = 0 ->
+		1:(hquest'=3)&(hquestbool'=true);
+
+	// succès 3
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q3_EXP) <= N_EXP & hlocation = 6 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=hexp+Q3_EXP);
+	[] htour > 0 & hevent = 0 & hquestbool = true & (hexp + Q3_EXP) > N_EXP & hlocation = 6 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=N_EXP);
+
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q3_EXP) <= N_EXP & hlocation = 7 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=hexp+Q3_EXP);
+	[] htour > 0 & hevent = 0 & hquestbool = false & (hexp + Q3_EXP) > N_EXP & hlocation = 7 & hquest = 3 ->
+		1:(hquest'=0)&(hexp'=N_EXP);
 
 
 endmodule
@@ -626,7 +542,7 @@ module badguy
 	[] mtour >= Q6_UT & mgold >= Q6_GOLD & (mexp + Q6_EXP) > N_EXP & mquest = 6 ->
 		1:(mexp'=N_EXP)&(mgold'=mgold-6)&(mquest'=0)&(mtour'=mtour-Q6_UT);
 
-   //-----------------------QUÊTES Q2-----------------------
+   //-----------------------QUÊTES DOUBLE-----------------------
 
 	// ---CONFIGURATION DE LA QUÊTE 3---
 	
@@ -707,6 +623,8 @@ label "hQuestQ2" = (hquest = 3)|(hquest = 5)|(hquest = 7);
 label "noQuest" = (hquest = 0);
 
 
-
+// ---CONSTANTES DE TEST---
+const xExp;
+const xGold;
 
 

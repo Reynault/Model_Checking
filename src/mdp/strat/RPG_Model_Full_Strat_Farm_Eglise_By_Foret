@@ -109,15 +109,6 @@ module hero
 	//Eglise -> Eglise
 	[] htour > 0 & hevent = 0 & hlocation = 0 ->
 		1:(hevent'=6)&(htour'=htour-1);
-	//Ville -> Ville
-	[] htour > 0 & hevent = 0 & hlocation = 5 ->
-		1:(hevent'=6)&(htour'=htour-1);
-	//Foret -> Foret
-	[] htour > 0 & hevent = 0 & hlocation = 6 ->
-		1:(hevent'=6)&(htour'=htour-1);
-	//Point de départ -> Point de départ
-	[] htour > 0 & hevent = 0 & hlocation = 7 ->
-		1:(hevent'=6)&(htour'=htour-1);
 
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
@@ -622,7 +613,6 @@ label "hQuestQ1" = (hquest = 1)|(hquest = 2)|(hquest = 4)|(hquest = 6);
 label "hQuestQ2" = (hquest = 3)|(hquest = 5)|(hquest = 7);
 label "noQuest" = (hquest = 0);
 
-
-
-
-
+// ---CONSTANTES DE TEST---
+const xGold;
+const xExp;

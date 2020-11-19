@@ -1,0 +1,8 @@
+Pmin=? [F "heroWin"]
+
+Pmax=? [F "heroWin"]
+
+Pmin=? [F (hgold=xGold)&(hexp=xExp)]
+
+Pmax=?[F (hgold=xGold)&(hexp=xExp)]
+
